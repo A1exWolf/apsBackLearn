@@ -1,6 +1,7 @@
 ﻿using LearnWriteBackOnAsp.Data;
 using LearnWriteBackOnAsp.Models.Users;
 using LearnWriteBackOnAsp.ModelsDbContext;
+using LearnWriteBackOnAsp.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,10 +12,12 @@ namespace LearnWriteBackOnAsp.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
+    private readonly TokenService _tokenService;
 
-    public AuthController(ApplicationDbContext context)
+    public AuthController(ApplicationDbContext context, TokenService tokenService)
     {
         _context = context;
+        _tokenService = tokenService;
     }
 
     [HttpPost("login")]
@@ -27,7 +30,8 @@ public class AuthController : ControllerBase
             return NotFound("Пользователь не найден");
         }
 
-        return Ok(new { user.Email, user.Role, date = DateTime.Now });
+        var token = _tokenService.CreateToken(user);
+        return Ok(new { user.Email, user.Role, date = DateTime.Now, token });
     }
 
     [HttpPost("register")]
