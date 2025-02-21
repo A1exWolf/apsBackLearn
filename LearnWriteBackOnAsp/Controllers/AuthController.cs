@@ -12,7 +12,7 @@ public class AuthController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
 
-    public AuthController(ApplicationDbContext context) 
+    public AuthController(ApplicationDbContext context)
     {
         _context = context;
     }
@@ -20,13 +20,14 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> LoginUser(UserLogin login)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == login.Email && u.Password == login.Password);
+        var user = await _context.Users.FirstOrDefaultAsync(u =>
+            u.Email == login.Email && u.Password == login.Password);
         if (user == null)
         {
             return NotFound("Пользователь не найден");
         }
 
-        return Ok(user);
+        return Ok(new { user.Email, user.Role, date = DateTime.Now });
     }
 
     [HttpPost("register")]
